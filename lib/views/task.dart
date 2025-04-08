@@ -1,23 +1,18 @@
 import 'package:abdullah_api/providers/token_provider.dart';
-import 'package:abdullah_api/services/auth.dart';
+import 'package:abdullah_api/services/task.dart';
 import 'package:abdullah_api/views/get_all_task.dart';
-import 'package:abdullah_api/views/profile.dart';
-import 'package:abdullah_api/views/register.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class LoginView extends StatefulWidget {
-  LoginView({super.key});
+class CreateTaskView extends StatefulWidget {
+  const CreateTaskView({super.key});
 
   @override
-  State<LoginView> createState() => _LoginViewState();
+  State<CreateTaskView> createState() => _CreateTaskViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
-  TextEditingController emailController = TextEditingController();
-
-  TextEditingController pwdController = TextEditingController();
-
+class _CreateTaskViewState extends State<CreateTaskView> {
+  TextEditingController descriptionController = TextEditingController();
   bool isLoading = false;
 
   @override
@@ -25,15 +20,12 @@ class _LoginViewState extends State<LoginView> {
     var tokenProvider = Provider.of<TokenProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Login"),
+        title: Text("Create Task"),
       ),
       body: Column(
         children: [
           TextField(
-            controller: emailController,
-          ),
-          TextField(
-            controller: pwdController,
+            controller: descriptionController,
           ),
           SizedBox(
             height: 20,
@@ -44,35 +36,30 @@ class _LoginViewState extends State<LoginView> {
                 )
               : ElevatedButton(
                   onPressed: () async {
-                    if (emailController.text.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Email cannot be empty.")));
-                      return;
-                    }
-                    if (pwdController.text.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Password cannot be empty.")));
+                    if (descriptionController.text.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text("Description cannot be empty.")));
                       return;
                     }
                     try {
                       isLoading = true;
                       setState(() {});
-                      await AuthServices()
-                          .loginUser(
-                              email: emailController.text,
-                              password: pwdController.text)
+                      await TaskServices()
+                          .addTask(
+                              description: descriptionController.text,
+                              token: tokenProvider.getToken())
                           .then((val) {
                         isLoading = false;
                         setState(() {});
-                        tokenProvider.setToken(val.token.toString());
                         showDialog(
                             context: context,
                             builder: (context) {
                               return AlertDialog(
                                 title: Text("Message"),
-                                content: Text("Logged In"),
+                                content:
+                                    Text("Task has been created successfully"),
                                 actions: [
-                                  ElevatedButton(
+                                  TextButton(
                                       onPressed: () {
                                         Navigator.push(
                                             context,
@@ -80,7 +67,7 @@ class _LoginViewState extends State<LoginView> {
                                                 builder: (context) =>
                                                     GetAllTaskView()));
                                       },
-                                      child: Text("Go to Profile"))
+                                      child: Text("Okay"))
                                 ],
                               );
                             });
@@ -92,16 +79,7 @@ class _LoginViewState extends State<LoginView> {
                           .showSnackBar(SnackBar(content: Text(e.toString())));
                     }
                   },
-                  child: Text("Login")),
-          SizedBox(
-            height: 30,
-          ),
-          ElevatedButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => RegisterView()));
-              },
-              child: Text("Go to Register"))
+                  child: Text("Add Task"))
         ],
       ),
     );

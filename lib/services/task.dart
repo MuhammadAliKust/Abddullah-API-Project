@@ -42,9 +42,58 @@ class TaskServices {
   }
 
   ///Get Completed Task
+  Future<TaskListingModel> getCompletedTask(String token) async {
+    try {
+      http.Response response = await http.get(
+          Uri.parse("${baseUrl}todos/completed"),
+          headers: {'Authorization': token});
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return TaskListingModel.fromJson(jsonDecode(response.body));
+      } else {
+        throw response.reasonPhrase.toString();
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   ///Get InCompleted Task
+  Future<TaskListingModel> getInCompletedTask(String token) async {
+    try {
+      http.Response response = await http.get(
+          Uri.parse("${baseUrl}todos/incomplete"),
+          headers: {'Authorization': token});
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return TaskListingModel.fromJson(jsonDecode(response.body));
+      } else {
+        throw response.reasonPhrase.toString();
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   ///Update Task
   ///Delete Task
+  Future<bool> deleteTask(
+      {required String taskID, required String token}) async {
+    try {
+      http.Response response = await http.delete(
+          Uri.parse("${baseUrl}todos/delete/$taskID"),
+          headers: {'Authorization': token});
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        throw response.reasonPhrase.toString();
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   ///Search Task
   Future<TaskListingModel> searchTask(
       {required String token, required String searchKey}) async {
