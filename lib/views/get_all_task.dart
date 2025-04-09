@@ -1,9 +1,12 @@
 import 'package:abdullah_api/models/task_list.dart';
 import 'package:abdullah_api/providers/token_provider.dart';
 import 'package:abdullah_api/services/task.dart';
+import 'package:abdullah_api/views/filter_task.dart';
 import 'package:abdullah_api/views/get_completed_task.dart';
 import 'package:abdullah_api/views/get_in_completed_task.dart';
+import 'package:abdullah_api/views/search_task.dart';
 import 'package:abdullah_api/views/task.dart';
+import 'package:abdullah_api/views/update_task.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
@@ -41,6 +44,22 @@ class _GetAllTaskViewState extends State<GetAllTaskView> {
                           builder: (context) => GetCompletedTaskView()));
                 },
                 icon: Icon(Icons.circle)),
+            IconButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SearchTaskView()));
+                },
+                icon: Icon(Icons.search)),
+            IconButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => FilterTaskView()));
+                },
+                icon: Icon(Icons.filter)),
           ],
         ),
         floatingActionButton: FloatingActionButton(
@@ -88,12 +107,12 @@ class _GetAllTaskViewState extends State<GetAllTaskView> {
                                                   token:
                                                       tokenProvider.getToken())
                                               .then((val) {
-
                                             isLoading = false;
                                             setState(() {});
                                             ScaffoldMessenger.of(context)
                                                 .showSnackBar(SnackBar(
-                                                content: Text('Task has been deleted successfully')));
+                                                    content: Text(
+                                                        'Task has been deleted successfully')));
                                           });
                                         } catch (e) {
                                           isLoading = false;
@@ -105,7 +124,16 @@ class _GetAllTaskViewState extends State<GetAllTaskView> {
                                       },
                                       icon: Icon(Icons.delete)),
                                   IconButton(
-                                      onPressed: () {}, icon: Icon(Icons.edit)),
+                                      onPressed: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    UpdateTaskView(
+                                                        task:
+                                                            model.tasks![i])));
+                                      },
+                                      icon: Icon(Icons.edit)),
                                 ],
                               ),
                             );

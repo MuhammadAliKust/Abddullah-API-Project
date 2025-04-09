@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:abdullah_api/models/task.dart';
 import 'package:abdullah_api/models/task_list.dart';
@@ -76,6 +77,24 @@ class TaskServices {
   }
 
   ///Update Task
+  Future<bool> updateTask({required Task model, required String token}) async {
+    try {
+      http.Response response = await http.patch(
+          Uri.parse("${baseUrl}todos/update/${model.id}"),
+          headers: {'Authorization': token, 'Content-Type': 'application/json'},
+          body: jsonEncode({'description': model.description}));
+
+      log(response.statusCode.toString());
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        throw response.reasonPhrase.toString();
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   ///Delete Task
   Future<bool> deleteTask(
       {required String taskID, required String token}) async {
